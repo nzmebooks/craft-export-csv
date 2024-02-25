@@ -56,6 +56,7 @@ class CsvRowsJob extends BaseJob
         $exportFile = fopen($folder . $this->export['lastSavedFilename'], 'a');
 
         $optionSiteId = isset($this->export['siteId']) ? $this->export['siteId'] : null;
+        // $optionExpireEntries = null; // isset($this->export['expireEntries']) ? count($this->export['expireEntries']) : null;
         $optionExpireEntries = isset($this->export['expireEntries']) ? count($this->export['expireEntries']) : null;
         $requestSite = Craft::$app->sites->getSiteById((int) $optionSiteId) !== null
             ? Craft::$app->sites->getSiteById((int) $optionSiteId)->id

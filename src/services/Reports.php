@@ -66,6 +66,9 @@ class Reports extends Component
         if ($exportSettings['sectionHandle']) {
             $filename = preg_replace('/{section-handle}/', $exportSettings['sectionHandle'], $filename);
         }
+        if ($exportSettings['entryId'] ?? null) {
+          $filename = preg_replace('/{entry-id}/', $exportSettings['entryId'], $filename);
+      }
 
         return $filename;
     }
@@ -110,7 +113,7 @@ class Reports extends Component
         $numberOfRows = $export['numberOfRows'] ? $export['numberOfRows'] : 100;
 
         // Get all id of all the entries that we want to export
-        $entriesId = $this->getActiveEntriesId($export['sectionHandle'], null, $export['entryStatus']);
+        $entriesId = $this->getActiveEntriesId($export['sectionHandle'], $export['entryId'] ?? null, null, $export['entryStatus']);
 
         // Overwrite file with just the header before adding rows
         $this->writeHeader($export['fields'], $export['lastSavedFilename']);
@@ -210,13 +213,26 @@ class Reports extends Component
      * @param int $limit
      * @return array
      */
-    public function getActiveEntriesId($sectionHandle, $limit = null, array $status)
+    public function getActiveEntriesId($sectionHandle, $entryId, $limit = null, array $status)
     {
+        if ($entryId) {
+          $entry = Entry::find()
+            ->id($entryId)
+            ->one();
+
+          return Entry::find()
+          ->section($sectionHandle)
+          ->title($entry->title)
+          ->status($status)
+          ->limit($limit)
+          ->ids();
+        }
+
         return Entry::find()
-            ->section($sectionHandle)
-            ->status($status)
-            ->limit($limit)
-            ->ids();
+          ->section($sectionHandle)
+          ->status($status)
+          ->limit($limit)
+          ->ids();
     }
 
     /**

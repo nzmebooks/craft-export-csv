@@ -34,6 +34,8 @@ return [
     'expireEntries-label' => 'Expire exported entries',
     'expireEntries-instructions' => 'Choose whether to set the status of entries to expired once they\'ve been exported.',
     'section-handle-instructions' => 'Choose the entry type you want to export.',
+    'entry-id-label' => 'Event to export',
+    'entry-id-instructions' => 'Choose the event you want to export.',
     'name-label' => 'Name of the export',
     'name-instructions' => 'Choose a descriptive name for the export',
     'filename-label' => 'File Name',

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.3.0 - 2024-02-25
+### Added
+- For `eventRegistration` section, allow the user to filter by choosing an entry from the 'events' section
+
 ## 4.2.0 - 2022-12-19
 ### Added
 - Allow use of {batch} in filename
