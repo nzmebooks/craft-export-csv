@@ -138,7 +138,7 @@
             <hr/>
             <div class="flex space-between">
               <div class="flex">
-                <p><a href="{{ url('craft-export-csv/settings', { id: export.id }) }}">{{ export.name }}</a></p>
+                <p class="report-name"><a href="{{ url('craft-export-csv/settings', { id: export.id }) }}">{{ export.name }}</a></p>
                 <p>{{ export.sectionHandle }}</p>
                 <p>{{ export.filename }}</p>
               </div>
@@ -190,6 +190,10 @@
         #reports-list hr{
             clear:both;
             margin: 0 0;
+        }
+        #reports-list .report-name {
+          width: 200px;
+          display: inline-block;
         }
         .hide {
             display: none;

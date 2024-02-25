@@ -245,14 +245,14 @@ class SettingsController extends BaseController
     {
         $id = Craft::$app->request->getParam('id');
 
-        $this->plugin->exportsService->duplicateExportById($id);
+        $newId = $this->plugin->exportsService->duplicateExportById($id);
 
         if (!Craft::$app->getPlugins()->savePluginSettings($this->plugin, $this->settings->exports)) {
             Craft::$app->getSession()->setError(Craft::t('app', 'Couldn’t save plugin settings.'));
         } else {
             Craft::$app->getSession()->setNotice(Craft::t('app', 'Plugin settings updated.'));
         }
-        return $this->redirect('craft-export-csv/settings');
+        return $this->redirect("craft-export-csv/settings?id=$newId");
     }
 
     /**

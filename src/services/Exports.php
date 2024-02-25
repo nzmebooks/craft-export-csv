@@ -95,7 +95,7 @@ class Exports extends Component
                 $newExport->setAttributes($exportValue);
                 // Add new export to settings array
                 $this->settings->exports[] = $newExport;
-                $oneDuplicated = true;
+                $oneDuplicated = $newExport->id;
             }
         }
         return $oneDuplicated;
