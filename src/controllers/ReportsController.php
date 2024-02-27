@@ -15,6 +15,7 @@ use craft\helpers\ArrayHelper;
 use craft\web\Controller;
 use craft\helpers\ElementHelper;
 use craft\helpers\StringHelper;
+use craft\elements\Entry;
 
 class ReportsController extends Controller
 {
@@ -64,12 +65,22 @@ class ReportsController extends Controller
                 if ($export['sectionHandle']) {
                     $section = Craft::$app->getSections()->getSectionByHandle($export['sectionHandle']);
                     $export['section'] = $section;
+
+                    if ($export['entryId'] ?? null) {
+                      $entryId = $export['entryId'];
+
+                      $entry = Entry::find()
+                      ->id($entryId)
+                      ->one();
+
+                      $export['entry'] = $entry;
+                    }
                 }
                 $export['fileExists'] = file_exists($folder . $export['lastSavedFilename']);
                 $exportsInfos[] = $export;
             }
         }
-        
+
         return $this->renderTemplate('craft-export-csv/reports/index', ['exports' => $exportsInfos]);
     }
 
@@ -96,9 +107,9 @@ class ReportsController extends Controller
             return Craft::$app->controller
                 ->redirect('craft-export-csv');
         }
-        
+
         $this->plugin->reportsService->generateCsvLines($export);
-        
+
         // Redirect with notice to start the queue
         Craft::$app->getSession()->setNotice('Csv generator started');
         return Craft::$app->controller

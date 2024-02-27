@@ -8,6 +8,7 @@ use Craft;
 use craft\base\Plugin;
 use craft\errors\InvalidPluginException;
 use craft\web\Controller as BaseController;
+use craft\elements\Entry;
 use yii\web\BadRequestHttpException;
 
 /**
@@ -69,6 +70,20 @@ class SettingsController extends BaseController
           ];
         }
 
+        $sectionHandle = 'events';
+        $entries = Entry::find()
+            ->section($sectionHandle);
+        $entriesOptions = [[
+          'label' => 'Select an event',
+          'value' => ''
+        ]];
+        foreach ($entries as $entry) {
+            $entriesOptions[] = [
+            'label' => $entry->title,
+            'value' => $entry->id,
+          ];
+        }
+
         $sites = Craft::$app->sites->allSites;
         $sitesOptions = array_map(function ($site) {
             return [
@@ -112,6 +127,7 @@ class SettingsController extends BaseController
             [
                 'settings' => $this->settings,
                 'sectionsOptions' => $sectionsOptions,
+                'entriesOptions' => $entriesOptions,
                 'sitesOptions' => $sitesOptions,
                 'statusOptions' => $statusOptions,
                 'expireEntriesOptions' => $expireEntriesOptions,
@@ -159,6 +175,26 @@ class SettingsController extends BaseController
                  'plugin' => $this->plugin
              ]);
             return null;
+        }
+
+        if ($exportValue['entryId']) {
+          // Validate that the entry belongs to siteId settings
+          $entryId = $exportValue['entryId'];
+          $siteId = $exportValue['siteId'];
+
+          $entry = Entry::find()
+              ->id($entryId)
+              ->siteId($siteId)
+              ->one();
+
+          if (!$entry) {
+              Craft::$app->getSession()->setError(Craft::t('app', 'The entry is invalid for selected site'));
+              // Send the plugin back to the template
+              Craft::$app->getUrlManager()->setRouteParams([
+                   'plugin' => $this->plugin
+               ]);
+              return null;
+          }
         }
 
         $id = $exportValue['id'] ?? null;
@@ -209,14 +245,14 @@ class SettingsController extends BaseController
     {
         $id = Craft::$app->request->getParam('id');
 
-        $this->plugin->exportsService->duplicateExportById($id);
+        $newId = $this->plugin->exportsService->duplicateExportById($id);
 
         if (!Craft::$app->getPlugins()->savePluginSettings($this->plugin, $this->settings->exports)) {
             Craft::$app->getSession()->setError(Craft::t('app', 'Couldn’t save plugin settings.'));
         } else {
             Craft::$app->getSession()->setNotice(Craft::t('app', 'Plugin settings updated.'));
         }
-        return $this->redirect('craft-export-csv/settings');
+        return $this->redirect("craft-export-csv/settings?id=$newId");
     }
 
     /**

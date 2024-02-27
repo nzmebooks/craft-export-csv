@@ -56,6 +56,15 @@
     })}}
 
     {{ forms.selectField({
+      label: 'entry-id-label'|t('craft-export-csv'),
+      instructions: 'entry-id-instructions'|t('craft-export-csv'),
+      id: 'entryId',
+      name: 'settings[entryId]',
+      options: entriesOptions,
+      value: selectedExport['entryId'] ?? null,
+    })}}
+
+    {{ forms.selectField({
         label: 'sites-handle-label'|t('craft-export-csv'),
         id: 'sectionHandle',
         name: 'settings[siteId]',
@@ -129,7 +138,7 @@
             <hr/>
             <div class="flex space-between">
               <div class="flex">
-                <p><a href="{{ url('craft-export-csv/settings', { id: export.id }) }}">{{ export.name }}</a></p>
+                <p class="report-name"><a href="{{ url('craft-export-csv/settings', { id: export.id }) }}">{{ export.name }}</a></p>
                 <p>{{ export.sectionHandle }}</p>
                 <p>{{ export.filename }}</p>
               </div>
@@ -141,6 +150,27 @@
 
         {% endfor %}
     </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          var sectionHandle = document.getElementById('siteId');
+          var entryId = document.getElementById('entryId-field');
+
+          if (sectionHandle.value == 'eventRegistrations') {
+              entryId.style.display = 'block';
+          } else {
+              entryId.style.display = 'none';
+          }
+
+          sectionHandle.addEventListener('change', function() {
+              if (this.value == 'eventRegistrations') {
+                  entryId.style.display = 'block';
+              } else {
+                  entryId.style.display = 'none';
+              }
+          });
+      });
+    </script>
 
     <style type="text/css">
         .flex {
@@ -160,6 +190,13 @@
         #reports-list hr{
             clear:both;
             margin: 0 0;
+        }
+        #reports-list .report-name {
+          width: 200px;
+          display: inline-block;
+        }
+        .hide {
+            display: none;
         }
     </style>
 {% endblock %}

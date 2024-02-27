@@ -31,6 +31,7 @@ class Export extends Model
     public $id;
     public $name;
     public $sectionHandle;
+    public $entryId;
     public $filename = '{section-handle}-{timestamp}.csv';
     public $siteId;
     public $entryStatus;
@@ -78,7 +79,7 @@ class Export extends Model
     {
         return [
             [['name', 'sectionHandle', 'filename', 'fields', 'siteId', 'entryStatus', 'expireEntries'], 'required'],
-            [['name', 'sectionHandle', 'filename'], 'string'],
+            [['name', 'sectionHandle', 'entryId', 'filename'], 'string'],
             [['numberOfRows', 'batch'], 'number'],
         ];
     }

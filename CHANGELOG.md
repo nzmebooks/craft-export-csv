@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.3.0 - 2024-02-27
+### Added
+- Fork this plugin as nzmebooks/craft-export-csv as we want to introduce functionality specific to
+sites run by meBooks, namely the ability to export eventRegiestrations that are releated to a certain event.
+
+## 4.2.2 - 2024-02-25
+### Fix
+- Fix duplication
+
+## 4.2.1 - 2024-02-25
+### Added
+- For `eventRegistration` section, allow the user to filter by choosing an entry from the 'events' section
+
 ## 4.2.0 - 2022-12-19
 ### Added
 - Allow use of {batch} in filename

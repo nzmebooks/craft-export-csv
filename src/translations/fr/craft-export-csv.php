@@ -34,6 +34,8 @@ return [
     'expireEntries-label' => 'Faire expirer les entrées exportées',
     'expireEntries-instructions' => 'Choisissez si vous souhaitez définir le statut des entrées sur expiré une fois qu\'elles ont été exportées.',
     'section-handle-instructions' => 'Sélectionnez le type d’entrée que vous souhaitez exporter.',
+    'entry-id-label' => 'Événement à exporter',
+    'entry-id-instructions' => 'Choisissez l\'événement que vous souhaitez exporter',
     'name-label' => 'Nom de l\'export',
     'name-instructions' => 'Choisir un nom descriptif pour l\'export',
     'filename-label' => 'Nom du fichier',

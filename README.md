@@ -2,6 +2,11 @@
 
 ![Screenshot](resources/img/header.png)
 
+## Fork
+
+We've forked this plugin from https://github.com/kffein/Craft-export-Csv, as we want to introduce functionality specific to
+sites run by meBooks, namely the ability to export eventRegiestrations that are releated to a certain event.
+
 ## Requirements
 
 This plugin requires Craft CMS 3.0.0-beta.23 or later.
@@ -17,7 +22,7 @@ You can also install Export CSV via the Plugin Store in the Craft AdminCP.
 
 ## Overview
 
-This plugin will allow multiple csv export configurations 
+This plugin will allow multiple csv export configurations
 
 ## Configuration
 

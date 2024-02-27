@@ -1,8 +1,8 @@
 {
-  "name": "kffein/craft-export-csv",
+  "name": "nzmebooks/craft-export-csv",
   "description": "A plugin to export entries to CSV files.",
   "type": "craft-plugin",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "keywords": [
     "craft",
     "cms",
@@ -11,14 +11,14 @@
     "craft-export-csv"
   ],
   "support": {
-    "docs": "https://github.com/kffein/craft-export-csv/blob/master/README.md",
-    "issues": "https://github.com/kffein/craft-export-csv/issues"
+    "docs": "https://github.com/nzmebooks/craft-export-csv/blob/master/README.md",
+    "issues": "https://github.com/nzmebooks/craft-export-csv/issues"
   },
   "license": "MIT",
   "authors": [
     {
-      "name": "KFFEIN",
-      "homepage": "http://kffein.com"
+      "name": "meBooks",
+      "homepage": "https://mebooks.co.nz"
     }
   ],
   "require": {
@@ -33,9 +33,9 @@
   "extra": {
     "handle": "craft-export-csv",
     "name": "Export CSV",
-    "developer": "KFFEIN",
-    "developerUrl": "https://kffein.com",
-    "changelogUrl": "https://raw.githubusercontent.com/kffein/craft-export-csv/master/CHANGELOG.md",
+    "developer": "Jason Darwin",
+    "developerUrl": "https://mebooks.co.nz",
+    "changelogUrl": "https://raw.githubusercontent.com/nzmebooks/craft-export-csv/master/CHANGELOG.md",
     "class": "kffein\\craftexportcsv\\CraftExportCsv"
   },
   "config": {
