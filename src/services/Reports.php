@@ -202,6 +202,9 @@ class Reports extends Component
         foreach (array_keys($this->_entryFields) as $handle) {
             $formattedString = preg_replace(sprintf('/{%s}/', $handle), $section->{$handle}, $formattedString);
         }
+        // Allow the entry id to be used in conact handle
+        $handle = 'id';
+        $formattedString = preg_replace(sprintf('/{%s}/', $handle), $section->{$handle}, $formattedString);
 
         return $formattedString;
     }

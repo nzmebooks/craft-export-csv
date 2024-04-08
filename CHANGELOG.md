@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 4.4.0 - 2024-04-08
+### Added
+- Allow the entry id to be used in conact handle
+
 ## 4.3.0 - 2024-02-27
 ### Added
 - Fork this plugin as nzmebooks/craft-export-csv as we want to introduce functionality specific to
