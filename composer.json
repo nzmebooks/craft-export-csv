@@ -2,7 +2,6 @@
   "name": "nzmebooks/craft-export-csv",
   "description": "A plugin to export entries to CSV files.",
   "type": "craft-plugin",
-  "version": "5.0.0",
   "keywords": [
     "craft",
     "cms",

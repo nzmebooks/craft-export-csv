@@ -82,7 +82,7 @@ class Reports extends Component
     {
         $fields = [];
 
-        $section = Craft::$app->getSections()->getSectionByHandle($sectionHandle);
+        $section = Craft::$app->getEntries()->getSectionByHandle($sectionHandle);
         if (!$section) {
             return $fields;
         }

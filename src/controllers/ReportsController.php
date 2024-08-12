@@ -63,7 +63,7 @@ class ReportsController extends Controller
         if (!empty($this->settings->exports)) {
             foreach ($this->settings->exports as $export) {
                 if ($export['sectionHandle']) {
-                    $section = Craft::$app->getSections()->getSectionByHandle($export['sectionHandle']);
+                    $section = Craft::$app->getEntries()->getSectionByHandle($export['sectionHandle']);
                     $export['section'] = $section;
 
                     if ($export['entryId'] ?? null) {

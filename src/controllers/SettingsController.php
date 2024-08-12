@@ -61,7 +61,7 @@ class SettingsController extends BaseController
             throw new InvalidPluginException($this->plugin->handle);
         }
 
-        $sections = Craft::$app->getSections()->getAllSections();
+        $sections = Craft::$app->getEntries()->getAllSections();
         $sectionsOptions = [];
         foreach ($sections as $section) {
             $sectionsOptions[] = [
