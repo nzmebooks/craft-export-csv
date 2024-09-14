@@ -113,7 +113,7 @@ class Reports extends Component
         $numberOfRows = $export['numberOfRows'] ? $export['numberOfRows'] : 100;
 
         // Get all id of all the entries that we want to export
-        $entriesId = $this->getActiveEntriesId($export['sectionHandle'], $export['entryId'] ?? null, null, $export['entryStatus']);
+        $entriesId = $this->getActiveEntriesId($export['sectionHandle'], $export['excludeRelatedSectionHandle'] ?? null, $export['excludeRelatedFieldHandle'] ?? null, $export['entryId'] ?? null, null, $export['entryStatus']);
 
         // Overwrite file with just the header before adding rows
         $this->writeHeader($export['fields'], $export['lastSavedFilename']);
@@ -216,24 +216,51 @@ class Reports extends Component
      * @param int $limit
      * @return array
      */
-    public function getActiveEntriesId($sectionHandle, $entryId, $limit = null, array $status)
+    public function getActiveEntriesId($sectionHandle, $excludeRelatedSectionHandle, $excludeRelatedFieldHandle, $entryId, $limit = null, array $status)
     {
+        $customFieldValues = [];
+        if ($excludeRelatedSectionHandle) {
+          $excludeEntries = Entry::find()
+              ->section($excludeRelatedSectionHandle)
+              ->all();
+
+          foreach ($excludeEntries as $entry) {
+            $customFieldValue = $entry->getFieldValue($excludeRelatedFieldHandle);
+            $customFieldValues[] = $customFieldValue;
+          }
+        }
+
         if ($entryId) {
           $entry = Entry::find()
             ->id($entryId)
             ->one();
 
-          return Entry::find()
+          $entries = Entry::find()
           ->section($sectionHandle)
           ->title($entry->title)
-          ->status($status)
-          ->limit($limit)
-          ->ids();
+          ->status($status);
+        } else {
+          $entries = Entry::find()
+            ->section($sectionHandle)
+            ->status($status);
         }
 
-        return Entry::find()
-          ->section($sectionHandle)
-          ->status($status)
+        if (count($customFieldValues)) {
+          $section = Craft::$app->getEntries()->getSectionByHandle($sectionHandle);
+          $entryTypes = $section->getEntryTypes();
+          // Get the first entry type
+          $entryType = array_shift($entryTypes);
+          $entryType = Craft::$app->getEntries()->getEntryTypeByHandle($entryType['handle']);
+          $fieldLayout = $entryType->getFieldLayout();
+          $sourceField = $fieldLayout->getFieldByHandle($excludeRelatedFieldHandle);
+
+          return $entries
+            ->andWhere(['not in', $sourceField->getValueSql(), $customFieldValues])
+            ->limit($limit)
+            ->ids();
+        }
+
+        return $entries
           ->limit($limit)
           ->ids();
     }
@@ -250,6 +277,7 @@ class Reports extends Component
             ->id($ids)
             ->status(null)
             ->limit(null)
+            ->orderBy(['title' => SORT_ASC])
             ->all();
     }
 

@@ -70,6 +70,13 @@ class SettingsController extends BaseController
           ];
         }
 
+        // merge $sectionsOptions with a placeholder item
+        $excludeRelatedSectionOptions = $sectionsOptions;
+        array_unshift($excludeRelatedSectionOptions, [
+          'label' => 'Select a section',
+          'value' => ''
+        ]);
+
         $sectionHandle = 'events';
         $entries = Entry::find()
             ->section($sectionHandle);
@@ -127,6 +134,7 @@ class SettingsController extends BaseController
             [
                 'settings' => $this->settings,
                 'sectionsOptions' => $sectionsOptions,
+                'excludeRelatedSectionOptions' => $excludeRelatedSectionOptions,
                 'entriesOptions' => $entriesOptions,
                 'sitesOptions' => $sitesOptions,
                 'statusOptions' => $statusOptions,
@@ -161,12 +169,12 @@ class SettingsController extends BaseController
             return null;
         }
 
-        // Validate that the section belong to siteId settings
-        $sectionData = Craft::$app->sections->getSectionByHandle($exportValue['sectionHandle']);
+        // Validate that the section belongs to siteId settings
+        $sectionData = Craft::$app->entries->getSectionByHandle($exportValue['sectionHandle']);
 
         $sectionSiteEnabled = array_map(function ($sectionSetting) {
             return $sectionSetting->siteId;
-        }, Craft::$app->sections->getSectionSiteSettings($sectionData->id));
+        }, Craft::$app->entries->getSectionSiteSettings($sectionData->id));
 
         if (!in_array($exportValue['siteId'], $sectionSiteEnabled)) {
             Craft::$app->getSession()->setError(Craft::t('app', 'The section is invalid for selected site'));
@@ -175,6 +183,44 @@ class SettingsController extends BaseController
                  'plugin' => $this->plugin
              ]);
             return null;
+        }
+
+        // Validate that the section to exclude belongs to siteId settings
+        $sectionData = Craft::$app->entries->getSectionByHandle($exportValue['excludeRelatedSectionHandle']);
+
+        if ($sectionData !== null) {
+          $sectionSiteEnabled = array_map(function ($sectionSetting) {
+              return $sectionSetting->siteId;
+          }, Craft::$app->entries->getSectionSiteSettings($sectionData->id));
+
+          if (!in_array($exportValue['siteId'], $sectionSiteEnabled)) {
+              Craft::$app->getSession()->setError(Craft::t('app', 'The section to exclude related entries is invalid for selected site'));
+              // Send the plugin back to the template
+              Craft::$app->getUrlManager()->setRouteParams([
+                   'plugin' => $this->plugin
+               ]);
+              return null;
+          }
+
+          if (!$exportValue['excludeRelatedFieldHandle']) {
+            Craft::$app->getSession()->setError(Craft::t('app', 'Both the section to exclude and the field to match entries to exclude must be supplied'));
+              // Send the plugin back to the template
+              Craft::$app->getUrlManager()->setRouteParams([
+                'plugin' => $this->plugin
+            ]);
+           return null;
+          }
+        }
+
+        if ($sectionData == null) {
+          if ($exportValue['excludeRelatedFieldHandle']) {
+            Craft::$app->getSession()->setError(Craft::t('app', 'Both the section to exclude and the field to match entries to exclude must be supplied'));
+              // Send the plugin back to the template
+              Craft::$app->getUrlManager()->setRouteParams([
+                'plugin' => $this->plugin
+            ]);
+           return null;
+          }
         }
 
         if ($exportValue['entryId']) {

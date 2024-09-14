@@ -56,6 +56,24 @@
     })}}
 
     {{ forms.selectField({
+        label: 'section-exclude-related-handle-label'|t('craft-export-csv'),
+        instructions: 'section-exclude-related-handle-instructions'|t('craft-export-csv'),
+        id: 'excludeRelatedSectionHandle',
+        name: 'settings[excludeRelatedSectionHandle]',
+        options: excludeRelatedSectionOptions,
+        value: selectedExport['excludeRelatedSectionHandle'] ?? null,
+    })}}
+
+    {{ forms.textField({
+        label: 'field-exclude-related-handle-label'|t('craft-export-csv'),
+        instructions: 'field-exclude-related-handle-instructions'|t('craft-export-csv'),
+        id: 'excludeRelatedFieldHandle',
+        name: 'settings[excludeRelatedFieldHandle]',
+        size:30,
+        value: selectedExport['excludeRelatedFieldHandle'] ?? null,
+    })}}
+
+    {{ forms.selectField({
       label: 'entry-id-label'|t('craft-export-csv'),
       instructions: 'entry-id-instructions'|t('craft-export-csv'),
       id: 'entryId',
