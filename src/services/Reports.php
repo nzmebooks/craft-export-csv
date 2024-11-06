@@ -222,6 +222,7 @@ class Reports extends Component
         if ($excludeRelatedSectionHandle) {
           $excludeEntries = Entry::find()
               ->section($excludeRelatedSectionHandle)
+              ->status([Entry::STATUS_ARCHIVED, Entry::STATUS_DISABLED, Entry::STATUS_ENABLED])
               ->all();
 
           foreach ($excludeEntries as $entry) {

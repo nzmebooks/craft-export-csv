@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.1 - 2024-11-06
+### Fix
+- Ensure we get all expired entries from the section to exclude entries from export.
+
 ## 5.1.0 - 2024-09-14
 ### Added
 - Add ability to specify section handle and field handle to use to exclude entries from export. This is needed to allow us to export those schools that have not placed any FIS orders.
