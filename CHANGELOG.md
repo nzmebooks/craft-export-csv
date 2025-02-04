@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.2 - 2025-02-04
+### Fix
+- Guard against expireEntries not being an array.
+
 ## 5.1.1 - 2024-11-06
 ### Fix
 - Ensure we get all expired entries from the section to exclude entries from export.
