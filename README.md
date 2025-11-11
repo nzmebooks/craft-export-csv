@@ -1,4 +1,4 @@
-# Export CSV plugin for Craft CMS 3.x
+# Export CSV plugin for Craft CMS
 
 ![Screenshot](resources/img/header.png)
 

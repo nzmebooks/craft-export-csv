@@ -70,8 +70,15 @@ class CsvRowsJob extends BaseJob
         // Get all the fields from entries once
         CraftExportCsv::getInstance()->reportsService->setEntryFields($this->export['sectionHandle']);
 
-        // Get all entries from the array of ids
-        $entries = CraftExportCsv::getInstance()->reportsService->getEntriesById($this->entriesId);
+        // DEBUG: Log the IDs being processed in this job
+        Craft::info(sprintf('CsvRowsJob: Processing %d entry IDs', count($this->entriesId)), 'craft-export-csv');
+
+        // Get all entries from the array of ids, using the same status filter as the export configuration
+        $entries = CraftExportCsv::getInstance()->reportsService->getEntriesById($this->entriesId, $this->export['entryStatus'] ?? null);
+
+        // DEBUG: Log how many entries were retrieved
+        Craft::info(sprintf('CsvRowsJob: Retrieved %d entries for IDs (expected %d)',
+            count($entries), count($this->entriesId)), 'craft-export-csv');
 
         foreach ($entries as $entry) {
             // Is the entry empty?

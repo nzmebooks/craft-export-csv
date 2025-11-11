@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.2.0 - 2025-11-12
+### Fix
+- Ensure we process statuses correctly.
+- Add ability to dedup records by a field id
+
 ## 5.1.2 - 2025-02-04
 ### Fix
 - Guard against expireEntries not being an array.

@@ -39,6 +39,7 @@ class Export extends Model
     public $entryStatus;
     public $expireEntries;
     public $batch;
+    public $deduplicateByField;
 
     /**
      * Temporary porperty of the converted field name everytime the csv is generated.
@@ -82,7 +83,7 @@ class Export extends Model
         return [
             [['name', 'sectionHandle', 'filename', 'fields', 'siteId', 'entryStatus', 'expireEntries'], 'required'],
             [['name', 'sectionHandle', 'entryId', 'filename'], 'string'],
-            [['name', 'excludeRelatedSectionHandle', 'excludeRelatedFieldHandle', 'entryId', 'filename'], 'string'],
+            [['name', 'excludeRelatedSectionHandle', 'excludeRelatedFieldHandle', 'entryId', 'filename', 'deduplicateByField'], 'string'],
             [['numberOfRows', 'batch'], 'number'],
         ];
     }

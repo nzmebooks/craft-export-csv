@@ -82,6 +82,16 @@
       value: selectedExport['entryId'] ?? null,
     })}}
 
+    {{ forms.textField({
+        label: 'Deduplicate by field',
+        instructions: 'If entries have duplicate values for this field, only the most recent entry will be exported. Leave blank to export all entries.',
+        id: 'deduplicateByField',
+        name: 'settings[deduplicateByField]',
+        placeholder: 'e.g., fruitInSchoolId',
+        size:30,
+        value: selectedExport['deduplicateByField'] ?? null,
+    })}}
+
     {{ forms.selectField({
         label: 'sites-handle-label'|t('craft-export-csv'),
         id: 'sectionHandle',

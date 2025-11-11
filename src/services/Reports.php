@@ -113,7 +113,15 @@ class Reports extends Component
         $numberOfRows = $export['numberOfRows'] ? $export['numberOfRows'] : 100;
 
         // Get all id of all the entries that we want to export
-        $entriesId = $this->getActiveEntriesId($export['sectionHandle'], $export['excludeRelatedSectionHandle'] ?? null, $export['excludeRelatedFieldHandle'] ?? null, $export['entryId'] ?? null, null, $export['entryStatus']);
+        $entriesId = $this->getActiveEntriesId(
+            $export['sectionHandle'],
+            $export['excludeRelatedSectionHandle'] ?? null,
+            $export['excludeRelatedFieldHandle'] ?? null,
+            $export['entryId'] ?? null,
+            null,
+            $export['entryStatus'],
+            $export['deduplicateByField'] ?? null
+        );
 
         // Overwrite file with just the header before adding rows
         $this->writeHeader($export['fields'], $export['lastSavedFilename']);
@@ -214,10 +222,15 @@ class Reports extends Component
      *
      * @param string $sectionHandle
      * @param int $limit
+     * @param string|null $deduplicateByField Field handle to deduplicate by (keeps most recent entry per unique field value)
      * @return array
      */
-    public function getActiveEntriesId($sectionHandle, $excludeRelatedSectionHandle, $excludeRelatedFieldHandle, $entryId, $limit = null, array $status)
+    public function getActiveEntriesId($sectionHandle, $excludeRelatedSectionHandle, $excludeRelatedFieldHandle, $entryId, $limit = null, array $status, $deduplicateByField = null)
     {
+        // Normalize status values to lowercase to match Craft's constants
+        // The UI saves capitalized values (e.g., "Expired", "Live"), but Craft expects lowercase (e.g., "expired", "live")
+        $normalizedStatus = array_map('strtolower', $status);
+
         $customFieldValues = [];
         if ($excludeRelatedSectionHandle) {
           $excludeEntries = Entry::find()
@@ -239,11 +252,11 @@ class Reports extends Component
           $entries = Entry::find()
           ->section($sectionHandle)
           ->title($entry->title)
-          ->status($status);
+          ->status($normalizedStatus);
         } else {
           $entries = Entry::find()
             ->section($sectionHandle)
-            ->status($status);
+            ->status($normalizedStatus);
         }
 
         if (count($customFieldValues)) {
@@ -255,31 +268,128 @@ class Reports extends Component
           $fieldLayout = $entryType->getFieldLayout();
           $sourceField = $fieldLayout->getFieldByHandle($excludeRelatedFieldHandle);
 
-          return $entries
+          $ids = $entries
             ->andWhere(['not in', $sourceField->getValueSql(), $customFieldValues])
             ->limit($limit)
             ->ids();
-        }
-
-        return $entries
+        } else {
+          $ids = $entries
           ->limit($limit)
           ->ids();
+        }
+
+        // DEBUG: Log initial ID count
+        Craft::info(sprintf('getActiveEntriesId: Retrieved %d IDs before deduplication (section=%s, status=%s)',
+            count($ids), $sectionHandle, implode(',', $normalizedStatus)), 'craft-export-csv');
+
+        // If deduplication is requested, keep only the most recent entry per unique field value
+        if ($deduplicateByField && !empty($ids)) {
+          $ids = $this->deduplicateEntriesByField($ids, $deduplicateByField, $status);
+          Craft::info(sprintf('getActiveEntriesId: After deduplication by %s: %d IDs',
+              $deduplicateByField, count($ids)), 'craft-export-csv');
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Deduplicate entries by a field value, keeping only the most recent entry for each unique value
+     *
+     * @param array $ids Entry IDs to deduplicate
+     * @param string $fieldHandle Field handle to group by
+     * @param array $status Status filter to apply when fetching entries
+     * @return array Deduplicated entry IDs
+     */
+    private function deduplicateEntriesByField($ids, $fieldHandle, $status)
+    {
+        if (empty($ids)) {
+            return $ids;
+        }
+
+        // Normalize status to lowercase
+        $normalizedStatus = array_map('strtolower', $status);
+
+        // DEBUG: Log input
+        Craft::info(sprintf('Deduplication starting: %d IDs passed in, field=%s, status=%s',
+            count($ids), $fieldHandle, implode(',', $normalizedStatus)), 'craft-export-csv');
+
+        // Get all entries with the field value and postDate
+        // Use the same status filter as the export to ensure we get all entries
+        // Order by postDate DESC, then by id DESC to ensure consistent ordering when postDates are the same
+        $entries = Entry::find()
+            ->id($ids)
+            ->status($normalizedStatus)
+            ->orderBy(['postDate' => SORT_DESC, 'elements.id' => SORT_DESC]) // Most recent first, highest ID for ties
+            ->all();
+
+        // DEBUG: Log retrieved entries
+        Craft::info(sprintf('Deduplication retrieved: %d entries from query', count($entries)), 'craft-export-csv');
+
+        $seenFieldValues = [];
+        $deduplicatedIds = [];
+        $duplicateCount = 0;
+        $emptyFieldCount = 0;
+
+        foreach ($entries as $entry) {
+            $fieldValue = $entry->getFieldValue($fieldHandle);
+
+            // Skip entries without a field value
+            if ($fieldValue === null || $fieldValue === '') {
+                $deduplicatedIds[] = $entry->id;
+                $emptyFieldCount++;
+                continue;
+            }
+
+            // Keep only the first (most recent) entry for each unique field value
+            if (!isset($seenFieldValues[$fieldValue])) {
+                $seenFieldValues[$fieldValue] = true;
+                $deduplicatedIds[] = $entry->id;
+            } else {
+                $duplicateCount++;
+            }
+        }
+
+        // DEBUG: Log results
+        Craft::info(sprintf('Deduplication results: %d unique values, %d duplicates removed, %d empty fields, %d IDs returned',
+            count($seenFieldValues), $duplicateCount, $emptyFieldCount, count($deduplicatedIds)), 'craft-export-csv');
+
+        return $deduplicatedIds;
     }
 
     /**
      * Return an array of entries
      *
      * @param array $ids
+     * @param array|null $status Optional status filter - should match the export configuration
      * @return array
      */
-    public function getEntriesById($ids)
+    public function getEntriesById($ids, $status = null)
     {
-        return Entry::find()
+        // DEBUG: Log input
+        Craft::info(sprintf('getEntriesById: Retrieving %d entry IDs', count($ids)), 'craft-export-csv');
+        $query = Entry::find()
             ->id($ids)
-            ->status(null)
             ->limit(null)
-            ->orderBy(['title' => SORT_ASC])
-            ->all();
+            ->orderBy(['title' => SORT_ASC]);
+
+        // If status is provided, normalize to lowercase and apply it
+        // This ensures we retrieve entries matching the export's configured statuses
+        if ($status !== null) {
+            $normalizedStatus = array_map('strtolower', $status);
+            $query->status($normalizedStatus);
+            Craft::info(sprintf('getEntriesById: Using status filter: %s', implode(',', $normalizedStatus)), 'craft-export-csv');
+        } else {
+            // Default to null which will use Craft's default (enabled only)
+            $query->status(null);
+            Craft::info('getEntriesById: Using default status filter (enabled only)', 'craft-export-csv');
+        }
+
+        $entries = $query->all();
+
+        // DEBUG: Log result
+        Craft::info(sprintf('getEntriesById: Retrieved %d entries (expected %d)', count($entries), count($ids)), 'craft-export-csv');
+
+        return $entries;
     }
 
     /**
