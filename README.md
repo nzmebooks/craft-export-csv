@@ -34,6 +34,18 @@ When saving an export, you can select a section and enter the filename you want 
 
 - **Concat handle** : Each fields are written within brackets.
 
+### Date Formatting
+
+For DateTime fields (such as `postDate`, `dateCreated`, etc.), you can apply custom date formatting using the syntax `{fieldHandle:format}` where `format` is any valid PHP date format string.
+
+**Examples:**
+- `{postDate:d/m/Y}` → `28/01/2026` (NZ date format)
+- `{postDate:Y-m-d}` → `2026-01-28` (ISO format)
+- `{postDate:H:i}` → `14:30` (24-hour time)
+- `{postDate:h:i A}` → `02:30 PM` (12-hour with AM/PM)
+- `{dateCreated:l, d F Y}` → `Tuesday, 28 January 2026`
+
+This is useful for splitting a datetime into separate date and time columns in your export.
 
 You can also configure the number of rows to be execute for each job. This prevent server to timeout during the export.
 

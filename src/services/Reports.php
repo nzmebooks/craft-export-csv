@@ -199,20 +199,50 @@ class Reports extends Component
     /**
      * Replace field handle text with the field value
      *
+     * Supports two syntaxes:
+     * - {fieldHandle} - returns the field value as-is (DateTime formatted as Y-m-d H:i:s)
+     * - {fieldHandle:format} - for DateTime fields, applies the PHP date format string
+     *
+     * Examples:
+     * - {postDate:d/m/Y} returns "28/01/2026"
+     * - {postDate:H:i} returns "14:30"
+     * - {title} returns the title as-is
+     *
      * @param string $string
-     * @param string $section
+     * @param Entry $entry
+     * @param string|null $sectionHandle
      * @return string
      */
-    public function replaceFieldsHandle($string, $section)
+    public function replaceFieldsHandle($string, $entry, $sectionHandle = null)
     {
         $formattedString = $string;
 
-        foreach (array_keys($this->_entryFields) as $handle) {
-            $formattedString = preg_replace(sprintf('/{%s}/', $handle), $section->{$handle}, $formattedString);
-        }
-        // Allow the entry id to be used in conact handle
-        $handle = 'id';
-        $formattedString = preg_replace(sprintf('/{%s}/', $handle), $section->{$handle}, $formattedString);
+        // Match {fieldHandle} or {fieldHandle:format}
+        $pattern = '/{([a-zA-Z_][a-zA-Z0-9_]*)(?::([^}]+))?}/';
+
+        $formattedString = preg_replace_callback($pattern, function($matches) use ($entry) {
+            $handle = $matches[1];
+            $format = $matches[2] ?? null;
+
+            // Get the field value
+            $value = $entry->{$handle} ?? null;
+
+            if ($value === null) {
+                return '';
+            }
+
+            // If format is specified and value is DateTime, apply format
+            if ($format && $value instanceof Datetime) {
+                return $value->format($format);
+            }
+
+            // For DateTime without format, use default format
+            if ($value instanceof Datetime) {
+                return $value->format('Y-m-d H:i:s');
+            }
+
+            return (string) $value;
+        }, $formattedString);
 
         return $formattedString;
     }

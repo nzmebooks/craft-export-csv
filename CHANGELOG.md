@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.3.0 - 2026-01-28
+### Added
+- Allow custom date formatting using the syntax `{fieldHandle:format}`
+
 ## 5.2.0 - 2025-11-12
 ### Fix
 - Ensure we process statuses correctly.
