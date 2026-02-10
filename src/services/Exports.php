@@ -131,7 +131,7 @@ class Exports extends Component
             }
         }
 
-        Craft::$app->getPlugins()->savePluginSettings($this->plugin, $this->settings->exports);
+        Craft::$app->getPlugins()->savePluginSettings($this->plugin, ['exports' => $this->settings->exports]);
     }
 
     /**
@@ -155,7 +155,7 @@ class Exports extends Component
                 $this->settings->exports[$key]['dateUpdated'] = $value;
             }
         }
-        Craft::$app->getPlugins()->savePluginSettings($this->plugin, $this->settings->exports);
+        Craft::$app->getPlugins()->savePluginSettings($this->plugin, ['exports' => $this->settings->exports]);
     }
     /**
      * Update batch if report has been generated
@@ -168,6 +168,6 @@ class Exports extends Component
                 $this->settings->exports[$key]['batch'] = intval($this->settings->exports[$key]['batch']) + 1;
             }
         }
-        Craft::$app->getPlugins()->savePluginSettings($this->plugin, $this->settings->exports);
+        Craft::$app->getPlugins()->savePluginSettings($this->plugin, ['exports' => $this->settings->exports]);
     }
 }

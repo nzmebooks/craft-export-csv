@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.0 - 2026-02-10
+### Fix
+- Ensure saving plugin config still works with Craft CMS 5.9
+
 ## 5.3.0 - 2026-01-28
 ### Added
 - Allow custom date formatting using the syntax `{fieldHandle:format}`

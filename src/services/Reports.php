@@ -473,8 +473,8 @@ class Reports extends Component
             // keep track of the file on the server.
             if ($export['id'] == $generatedExport['id']) {
                 $settings->exports[$key]['lastSavedFilename'] = $this->getCsvFilename($generatedExport);
-                if (!Craft::$app->getPlugins()->savePluginSettings($plugin, $settings->exports)) {
-                    Craft::$app->getSession()->setError(Craft::t('app', 'Couldn’t save plugin settings.'));
+                if (!Craft::$app->getPlugins()->savePluginSettings($plugin, ['exports' => $settings->exports])) {
+                    Craft::$app->getSession()->setError(Craft::t('app', 'Could not save plugin settings.'));
                 }
                 return $settings->exports[$key];
             }

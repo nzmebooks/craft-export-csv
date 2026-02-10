@@ -263,7 +263,7 @@ class SettingsController extends BaseController
           $this->settings->exports[] = $newExport;
         }
 
-        if (!Craft::$app->getPlugins()->savePluginSettings($this->plugin, $this->settings->exports)) {
+        if (!Craft::$app->getPlugins()->savePluginSettings($this->plugin, ['exports' => $this->settings->exports])) {
             Craft::$app->getSession()->setError(Craft::t('app', 'Couldn’t save plugin settings.'));
 
             // Send the plugin back to the template
@@ -293,7 +293,7 @@ class SettingsController extends BaseController
 
         $newId = $this->plugin->exportsService->duplicateExportById($id);
 
-        if (!Craft::$app->getPlugins()->savePluginSettings($this->plugin, $this->settings->exports)) {
+        if (!Craft::$app->getPlugins()->savePluginSettings($this->plugin, ['exports' => $this->settings->exports])) {
             Craft::$app->getSession()->setError(Craft::t('app', 'Couldn’t save plugin settings.'));
         } else {
             Craft::$app->getSession()->setNotice(Craft::t('app', 'Plugin settings updated.'));
@@ -314,7 +314,7 @@ class SettingsController extends BaseController
 
         $this->plugin->exportsService->deleteExportById($id);
 
-        if (!Craft::$app->getPlugins()->savePluginSettings($this->plugin, $this->settings->exports)) {
+        if (!Craft::$app->getPlugins()->savePluginSettings($this->plugin, ['exports' => $this->settings->exports])) {
             Craft::$app->getSession()->setError(Craft::t('app', 'Couldn’t save plugin settings.'));
         } else {
             Craft::$app->getSession()->setNotice(Craft::t('app', 'Plugin settings updated.'));
